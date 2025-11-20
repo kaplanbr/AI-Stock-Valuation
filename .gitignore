@@ -44,7 +44,7 @@ data/valuations/*
 # -----------------------
 # Secrets
 # -----------------------
-config.py
+# config.py
 config.toml
 *.key
 *.pem
