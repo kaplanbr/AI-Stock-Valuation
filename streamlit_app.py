@@ -242,7 +242,8 @@ if st.session_state.analysis_done:
         df_scenarios = df_scenarios[
             df_scenarios["Metric"].astype(str).str.strip() != ""
         ]
-
+        print(df_scenarios)
+        print(df_fund_display)
         # ---- Fundamentals değerlerini çek ----
         def get_fund(metric):
             try:
@@ -337,14 +338,14 @@ if st.session_state.analysis_done:
             shares_5y = shares_out * (1 + (dilution or 0.0))
             price_5y = equity_5y / shares_5y if shares_5y else None
 
-            price_5y /= (1.05 ** 5)  # 5% iskonto ile bugüne indirgeme
+            price_5y_disc = price_5y*((1.05 ** 5))  # 5% iskonto ile bugüne indirgeme
 
-            return rev_5y, ebit_5y, price_5y
+            return rev_5y, ebit_5y, price_5y, price_5y_disc
 
-        e_rev_mid, e_ebit_mid, price_mid = compute_scenario_targets(
+        e_rev_mid, e_ebit_mid, price_mid, price_mid_disc = compute_scenario_targets(
             cagr_mid, op_margin_mid, tax_mid, dil_mid, mult_mid
         )
-        e_rev_good, e_ebit_good, price_good = compute_scenario_targets(
+        e_rev_good, e_ebit_good, price_good, price_good_disc = compute_scenario_targets(
             cagr_good, op_margin_good, tax_good, dil_good, mult_good
         )
 
@@ -352,7 +353,7 @@ if st.session_state.analysis_done:
         scen_override_rows = {
             "E Revenue": (e_rev_mid, e_rev_good),
             "E EBITDA": (e_ebit_mid, e_ebit_good),
-            "Predicted Share Price (5 yr)": (price_mid, price_good),
+            "Predicted Share Price (5 yr)": (price_mid_disc, price_good_disc),
         }
         for metric, (mid_val, good_val) in scen_override_rows.items():
             mask = df_scenarios["Metric"] == metric
