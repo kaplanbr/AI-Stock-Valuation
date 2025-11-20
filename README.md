@@ -46,7 +46,6 @@ stock_val/
     stock_valuation.py
     __init__.py
   streamlit_app.py
-  main.py
   requirements.txt
   README.md
 ```
