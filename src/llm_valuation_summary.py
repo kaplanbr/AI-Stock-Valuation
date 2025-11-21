@@ -258,6 +258,12 @@ def write_llm_result_to_excel(
 
     wb.save(output_path)
 
+    # Remove original excel
+    try:
+        os.remove(excel_path)
+    except OSError:
+        pass
+
     # Read with pandas to read formula values
     try:
         app = xw.App(visible=False)

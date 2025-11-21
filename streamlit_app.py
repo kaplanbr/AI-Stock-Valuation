@@ -86,7 +86,7 @@ def styled_table(df: pd.DataFrame, numeric_cols=None):
                 ("padding", "0.45rem 0.75rem"),
                 ("border", "1px solid #e5e7eb"),
                 ("font-size", "0.9rem"),
-                 ("color", "#111827")
+                 ("color", "#111827"),
             ],
         },
         {
@@ -213,6 +213,8 @@ if st.session_state.analysis_done:
     if os.path.exists(st.session_state.ai_excel_path):
 
         df = pd.read_excel(st.session_state.ai_excel_path, header=None)
+
+
         df = df.iloc[:38, :3]  # keep A–C, and limit rows if needed
 
         # find split index
