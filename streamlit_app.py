@@ -325,7 +325,7 @@ if st.session_state.analysis_done:
             shares_5y = shares_out * (1 + (dilution or 0.0))
             price_5y = equity_5y / shares_5y if shares_5y else None
 
-            price_5y_disc = price_5y / ((1.05 ** 5))  # 5% iskonto ile bugüne indirgeme
+            price_5y_disc = price_5y/((1.05 ** 5))  # 5% iskonto ile bugüne indirgeme
 
             return rev_5y, ebit_5y, earning_5y, shares_5y, price_5y, price_5y_disc
 
@@ -348,7 +348,7 @@ if st.session_state.analysis_done:
             "E Shares Outstanding": (shares_mid, shares_good),
             "Expected EPS": (eps_mid, eps_good),
             "Predicted Share Price (5 yr)": (price_mid, price_good),
-            "Predicted Share Price": (price_mid_disc, price_good_disc),
+            "Predicted Share Price Discounted": (price_mid_disc, price_good_disc),
         }
         scen_metric_series = df_scenarios["Metric"].astype(str)
         for metric, (mid_val, good_val) in scen_override_rows.items():
