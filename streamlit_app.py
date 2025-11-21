@@ -267,6 +267,7 @@ if st.session_state.analysis_done:
         market_cap       = share_price * shares_out if share_price and shares_out else None
         gross_profit     = revenue_qtr - cogs if revenue_qtr is not None and cogs is not None else None
         gross_margin     = (gross_profit / revenue_qtr) if revenue_qtr else None
+        ebitda_ps        = op_profit / shares_out if op_profit is not None and shares_out else None
         operating_margin = (op_profit / revenue_qtr) if revenue_qtr else None
         net_cash         = (cash - debt) if cash is not None and debt is not None else None
 
@@ -277,6 +278,7 @@ if st.session_state.analysis_done:
             "Gross Margin": gross_margin,
             "Operating Margin": operating_margin,
             "Net Cash (auto)": net_cash,
+            "EBITDA PS": ebitda_ps,
         }
         for metric, val in fund_overrides.items():
             if val is not None:
@@ -307,20 +309,6 @@ if st.session_state.analysis_done:
         mult_mid  = get_scen("Long Term Earning Multiple", "Mid Scenario") or 25
         mult_good = get_scen("Long Term Earning Multiple", "Good Scenario") or mult_mid
 
-        cagr_mid   = get_scen("Expected Revenue CAGR (5y)", "Mid Scenario")
-        cagr_good  = get_scen("Expected Revenue CAGR (5y)", "Good Scenario")
-
-        op_margin_mid   = get_scen("E Operated Margin", "Mid Scenario")
-        op_margin_good  = get_scen("E Operated Margin", "Good Scenario")
-
-        dil_mid   = get_scen("Expected Dilution (5y)", "Mid Scenario")
-        dil_good  = get_scen("Expected Dilution (5y)", "Good Scenario")
-
-        tax_mid   = get_scen("Tax rate", "Mid Scenario") or 0.21
-        tax_good  = get_scen("Tax rate", "Good Scenario") or tax_mid
-
-        mult_mid  = get_scen("Long Term Earning Multiple", "Mid Scenario") or 25
-        mult_good = get_scen("Long Term Earning Multiple", "Good Scenario") or mult_mid
 
         # ---- senaryo bazlı hesaplama fonksiyonu ----
         def compute_scenario_targets(cagr, op_margin, tax_rate, dilution, multiple):
@@ -330,30 +318,38 @@ if st.session_state.analysis_done:
             revenue_year0 = revenue_qtr * 4  # Q'dan yıla
             rev_5y = revenue_year0 * (1 + cagr) ** 5
             ebit_5y = rev_5y * op_margin
-            net_5y = ebit_5y * (1 - tax_rate)
+            earning_5y = ebit_5y * (1 - tax_rate)
 
             # basit P/E tarzı değerleme
-            equity_5y = net_5y * multiple
+            equity_5y = earning_5y * multiple
 
             shares_5y = shares_out * (1 + (dilution or 0.0))
             price_5y = equity_5y / shares_5y if shares_5y else None
 
             price_5y_disc = price_5y*((1.05 ** 5))  # 5% iskonto ile bugüne indirgeme
 
-            return rev_5y, ebit_5y, price_5y, price_5y_disc
+            return rev_5y, ebit_5y, earning_5y, shares_5y, price_5y, price_5y_disc
 
-        e_rev_mid, e_ebit_mid, price_mid, price_mid_disc = compute_scenario_targets(
+        e_rev_mid, e_ebit_mid, earning_mid,shares_mid, price_mid, price_mid_disc = compute_scenario_targets(
             cagr_mid, op_margin_mid, tax_mid, dil_mid, mult_mid
         )
-        e_rev_good, e_ebit_good, price_good, price_good_disc = compute_scenario_targets(
+        e_rev_good, e_ebit_good,earning_good,shares_good, price_good, price_good_disc = compute_scenario_targets(
             cagr_good, op_margin_good, tax_good, dil_good, mult_good
         )
 
-        # Scenarios tablosunda E Revenue / E EBITDA satırlarını override et
+        # EPS hesapla
+        eps_mid = earning_mid / shares_mid  
+        eps_good = earning_good / shares_good   
+
+        # Scenarios tablosunda ilgili satırları override et
         scen_override_rows = {
             "E Revenue": (e_rev_mid, e_rev_good),
             "E EBITDA": (e_ebit_mid, e_ebit_good),
-            "Predicted Share Price (5 yr)": (price_mid_disc, price_good_disc),
+            "Earning": (earning_mid, earning_good),
+            "E Shares Outstanding": (shares_mid, shares_good),
+            "Expected EPS": (eps_mid, eps_good),
+            "Predicted Share Price (5 yr)": (price_mid, price_good),
+            "Predicted Share Price": (price_mid_disc, price_good_disc),
         }
         for metric, (mid_val, good_val) in scen_override_rows.items():
             mask = df_scenarios["Metric"] == metric
@@ -364,12 +360,12 @@ if st.session_state.analysis_done:
                     df_scenarios.loc[mask, "Good Scenario"] = good_val
 
         # ---- Valuation Targets prediction ----
-        if share_price is not None and price_mid is not None and price_good is not None:
+        if share_price is not None and price_mid_disc is not None and price_good_disc is not None:
             st.session_state.predictions = {
                 "ticker": st.session_state.ticker,
                 "current_price": f"{share_price:.2f}",
-                "lower_prediction": f"{price_mid:.2f}",
-                "upper_prediction": f"{price_good:.2f}",
+                "lower_prediction": f"{price_mid_disc:.2f}",
+                "upper_prediction": f"{price_good_disc:.2f}",
             }
 
         # 1. Top Level Metrics (Python hesaplarından)
