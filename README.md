@@ -24,7 +24,6 @@ Supports:
 
 ### 2. Excel-Based Valuation Model
 - Populates fundamentals, scenarios, and fair-value predictions  
-- Saves outputs to: `data/valuations/`
 
 ### 3. AI Valuation Summary
 - Uses the latest quarterly earnings context  
@@ -34,7 +33,7 @@ Supports:
 ### 4. Streamlit Web Application
 - Clean UI  
 - Displays fundamentals + AI summary  
-- Allows downloading the generated Excel valuation
+- Allows downloading the generated valuation Excel
 
 ---
 
