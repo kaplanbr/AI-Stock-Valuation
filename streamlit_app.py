@@ -420,7 +420,7 @@ elif not submit_btn and not st.session_state.analysis_done:
 st.markdown(
     """
     <hr style="margin-top:2rem; margin-bottom:0.5rem;">
-    <div style="text-align:left; font-size:1.2rem; color: #888;">
+    <div style="text-align:left; font-size:1.1rem; color: #888;">
         Developed by <a href="https://github.com/kaplanbr" target="_blank">Kaplanbr</a>
     </div>
     """,
