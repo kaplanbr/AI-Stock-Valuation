@@ -2,7 +2,7 @@
 
 You can use the live version here:
 
-**https://ai-stock-valuation.streamlit.app/**
+**https://ai-stockv.streamlit.app/**
 
 # Stock Valuation App
 
