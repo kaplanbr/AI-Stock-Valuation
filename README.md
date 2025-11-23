@@ -2,8 +2,7 @@
 
 You can use the live version here:
 
-![App Screenshot](./assets/example_usage.PNG)
-
+[![App Screenshot](./assets/example_usage.png)](https://ai-stockv.streamlit.app/)
 **https://ai-stockv.streamlit.app/**
 
 # Stock Valuation App
