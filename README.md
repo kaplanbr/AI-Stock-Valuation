@@ -9,7 +9,8 @@ This project provides a complete automated stock valuation pipeline including:
 - Intrinsic value estimation using a single-stage DCF model  
 - Scenario calculations guided by AI-suggested assumptions  
 - Excel-based valuation model for verification and deeper analysis  
-- AI-generated valuation summary  
+- AI-generated valuation summary
+- AI-generated simulation inputs 
 - Streamlit web interface to run valuations interactively
 
 ---
