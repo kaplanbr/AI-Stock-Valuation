@@ -130,7 +130,7 @@ scenario inputs are these:
 - Tax rate (tax_rate)
 - Long Term Earning Multiple (lt_earning_multiple)
 
-
+If the stock is a Turkish company. Their tickers end with .IS, Interest Rate on Debt (interest_rate_debt) should be at least 0.25. 
 Keep the whole report concise less than 200 words.
 
 AFTER you finish the report, on a new line write exactly:
